@@ -3,7 +3,7 @@
 #define SCREEN_WIDTH  1280
 #define SCREEN_HEIGHT  720
 
-#define CHARACTER_HEIGHT  720
+#define CHARACTER_HEIGHT  SCREEN_HEIGHT/2
 
 //Szöveg középre igazítása
 void DrawTextCenter(const char *text, int fontSize, Color color)
@@ -20,6 +20,20 @@ void DrawTextCenter(const char *text, int fontSize, Color color)
     );
 }
 
+void DrawCharacterCenter(Texture2D character){
+    
+   float width = (float)character.width;
+   float height = (float)character.height;
+   
+   float characterScale = (float)CHARACTER_HEIGHT/(float)height;
+   
+   float x = SCREEN_WIDTH / 2.0f - (width * characterScale) / 2.0f;
+   float y = SCREEN_HEIGHT / 2.0f - (height * characterScale) / 2.0f;
+   
+   //DrawText(TextFormat("szélesség: %f/ magasság: %f", width * characterScale, height * characterScale), 0, 0, 30, BLACK);   
+   DrawTextureEx(character, (Vector2){x, y}, 0.0f, characterScale, WHITE);
+}
+
 int main (){
    
    //Képernyőablak létrehozása
@@ -27,14 +41,11 @@ int main (){
    
    Texture2D character = LoadTexture("resources/textures/character/characterStand.png");
   
-   int height = character.height;
-   int width = character.width;
-   
-   float characterScale = (float)CHARACTER_HEIGHT/(float)height;
-   
-   float x = SCREEN_WIDTH / 2.0f - (width * characterScale) / 2.0f;
-   float y = SCREEN_HEIGHT / 2.0f - (height * characterScale) / 2.0f;
-   
+   if (!IsTextureValid(character)){
+    CloseWindow();
+    return 1;
+   }
+  
    SetTargetFPS(60);
    
    while (!WindowShouldClose())
@@ -44,8 +55,7 @@ int main (){
        ClearBackground(RAYWHITE);
        
        //Karakter kirajzolása középre
-       DrawText(TextFormat("szélesség: %f/ magasság: %f", width * characterScale, height * characterScale), 0, 0, 30, BLACK);
-       DrawTextureEx(character, (Vector2){x, y}, 0.0f, characterScale, WHITE);
+       DrawCharacterCenter(character);
        
        EndDrawing();
    }
